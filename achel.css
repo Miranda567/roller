@@ -1,0 +1,99 @@
+
+    * {
+    margin: 0;
+    padding: 0;
+  
+    box-sizing: border-box;
+}
+
+    body {
+    height: 100vh;
+    paddin
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(to right, #f2709c, #ff9472);
+}
+
+        .game-container {
+    display: grid;
+    place-items: center;
+    width: 80%;
+    height: 50vh;
+    align-items: center;
+    justify-content: center;
+                max-width: 300px;
+    padding: 60px 0 40px;
+    border-radius: 30px;
+    background: #eeeeee;
+    box-shadow: 0 0 20px rgba(0, 0, 0, .1);
+    & h2{
+        font-family: cursive;
+        font-size: 2rem;
+        margin-bottom: 1.4rem;
+    }
+            max-width: 800px;
+            margin: auto;
+            text-align: center;
+        }
+        .player-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        .avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+        }
+        .dice-image {
+            width: 100px;
+            height: 100px;
+            margin: 10px;
+        }
+        #countdown {
+            font-size: 24px;
+            color: #ff0000;
+            background: #fff;
+            padding: 10px 20px;
+        }
+.roll {
+    cursor: pointer;
+    color: #b33951;
+    margin-top: 60px;
+    padding: 6px 12px;
+    border-radius: 3px;
+    font: 700 16px 'Montserrat';
+    border: 2px solid #b33951;
+    transition: .6s;
+}
+
+.roll:hover {
+    transform: scale(0.95);
+    color: #fff;
+    background: #b33951;
+}
+#start-game-btn {
+    cursor: pointer;
+    color: #b33951;
+    padding: 6px 12px;
+    border-radius: 3px;
+    font: 700 16px 'Montserrat';
+    border: 2px solid #b33951;
+    transition: .6s;
+}
+
+#start-game-btn:hover {
+    transform: scale(0.95);
+    color: #fff;
+    background: #b33951;
+}
+.entry-fee-section input {
+    color: #b33951;
+    padding: 6px 12px;
+    border-radius: 3px;
+    font: 700 16px 'Montserrat';
+    border: 2px solid #b33951;
+  
+  
+}
