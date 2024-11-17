@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mobile Bank App</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+   <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700&family=Poppins:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet">  <link rel="stylesheet" href="my.css">
+  </head>
+<body>
+      <div class="header">
+        <div>
+                                      <a href="settings-calmcove.html"> <img src="user.jpg" alt="Elizabeth Foster" width="32" height="32"></a>
+            <span class="user" id="username">Hi Loading ...</span>
+        </div>
+
+
+            <i class="fas fa-bell" style="font-size:30px; color:hsl(204, 80%, 63%);"></i>
+    
+        </div>
+    </header>
+        <div class="container">
+      <section class="balance">
+      <div class="balance-header">
+        <h2>BoonPoint</h2> <!-- Added Font Awesome icon -->
+        <button class="detailsBtn" id="subscription-status">GET PREMIUM</button>
+      </div>
+      <p class="balance-display" id="balance">0.00</p>
+        <div class="buttons">
+        <button id="transferBtn"> Activity</button>
+        <button id="paymentBtn"> Redeem</button>
+      </div>
+    </section>
+    
+              <div class="section">
+            <h2>Explore your profile and settings</h2>
+          <p id="error-message" class="error-message"></p>
+            <div class="grid" id="daily-bonus-btn">
+               <a href="#"><div class="card">
+                             <i class="fas fa-bell" style="font-size:30px; color:hsl(204, 80%, 63%);"></i>
+                    <p>Claim Daily Bonus</p>
+
+                </div></a>
+                              <a href="#"> <div class="card">
+                                                                <i class="fas fa-bell" style="font-size:30px; color:hsl(204, 80%, 63%);"></i>
+
+                    <p>Task List</p>
+                                
+
+                </div></a>
+                             <a href="#">  <div class="card">
+                                           <i class="fas fa-bell" style="font-size:30px; color:hsl(204, 80%, 63%);"></i>
+                    <p> Game History</p>
+
+                </div></a>
+                               <a href="#"><div class="card">            <i class="fas fa-bell" style="font-size:30px; color:hsl(204, 80%, 63%);"></i>
+                    <p>Redeem History</p>
+
+                </div></a>
+                             <a href="#">  <div class="card">
+                    <p>My Details</p>
+            <i class="fas fa-bell" style="font-size:30px; color:hsl(204, 80%, 63%);"></i>
+                </div></a>
+                              <a href="#"> <div class="card">
+                    <p>How it Works</p>
+            <i class="fas fa-bell" style="font-size:30px; color:hsl(204, 80%, 63%);"></i>
+                </div></a>
+            </div>
+            </div>
+              <div class="bottom-nav">
+  <!-- Home -->
+  <a href="dashboardfinal.html" class="nav-item">
+    <i class="fas fa-home"></i><br>
+    Home
+  </a>
+
+  <!-- Pay -->
+  <a href="deposit.html" class="nav-item">
+    <i class="fas fa-credit-card"></i><br>
+    Earn
+  </a>
+  <a href="deposit.html" class="nav-item">
+    <i class="fas fa-credit-card"></i><br>
+    Redeem
+  </a>
+
+  <!-- More -->
+  <a href="myprofile.html" class="nav-item active">
+    <i class="fas fa-bars"></i><br>
+    Profile
+  </a>
+</div>
+
+  </script>
+        <script src="https://www.gstatic.com/firebasejs/8.2.10/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.2.10/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.2.10/firebase-firestore.js"></script>
+
+    <script>
+        // Firebase configuration
+        var firebaseConfig = {
+            apiKey: "AIzaSyAtVvPjdsj84mWqaG4-7SyjbljCnslZ1SM",
+            authDomain: "hendaa-1.firebaseapp.com",
+            databaseURL: "https://hendaa-1-default-rtdb.firebaseio.com",
+            projectId: "hendaa-1",
+            storageBucket: "hendaa-1.appspot.com",
+            messagingSenderId: "831134776479",
+            appId: "1:831134776479:web:56cd7098fc69cd70a376aa"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        var auth = firebase.auth();
+        var db = firebase.firestore();
+
+        // DOM elements
+        var usernameDisplay = document.getElementById('username');
+        var balanceDisplay = document.getElementById('balance');
+        var subscriptionStatusDisplay = document.getElementById('subscription-status');
+        var errorMessageDiv = document.getElementById('error-message');
+        var dailyBonusBtn = document.getElementById('daily-bonus-btn');
+
+        const DAILY_BONUS_AMOUNT = 20;
+
+        // Function to update the DOM with user data
+        function displayUserData(data) {
+            usernameDisplay.textContent = data.username || "User";
+            balanceDisplay.textContent = data.balance.toFixed(2) || "0.00";
+            subscriptionStatusDisplay.textContent = data.isSubscribed ? "Subscribed" : "GET PREMIUM";
+        }
+
+        // Load cached data on page load
+        function loadCachedData() {
+            var cachedData = localStorage.getItem('userData');
+            if (cachedData) {
+                displayUserData(JSON.parse(cachedData));
+            }
+        }
+
+        // Cache user data
+        function cacheUserData(data) {
+            localStorage.setItem('userData', JSON.stringify(data));
+        }
+
+        // Clear cached data on logout
+        function clearCache() {
+            localStorage.removeItem('userData');
+        }
+
+        // Real-time listener for Firestore changes
+        function listenToUserData(user) {
+            db.collection('users').doc(user.uid).onSnapshot(function(doc) {
+                if (doc.exists) {
+                    var data = doc.data();
+                    displayUserData(data);
+                    cacheUserData(data); // Update cache whenever there's a change
+                } else {
+                    errorMessageDiv.textContent = "User data not found!";
+                }
+            });
+        }
+
+        // Fetch user data on auth state change
+        auth.onAuthStateChanged(function(user) {
+            if (user) {
+                loadCachedData(); // Load cached data immediately
+
+                // Listen for real-time updates
+                listenToUserData(user);
+            } else {
+                window.location.href = 'login.html';
+            }
+        });
+
+        // Daily Bonus Logic
+        dailyBonusBtn.addEventListener('click', function() {
+            var user = auth.currentUser;
+            if (user) {
+                db.collection('users').doc(user.uid).get().then(function(doc) {
+                    if (doc.exists) {
+                        var userData = doc.data();
+                        var lastBonusTime = userData.lastBonusTime ? userData.lastBonusTime.toDate() : null;
+                        var currentTime = new Date();
+                        
+                        // Check if 24 hours have passed since the last bonus
+                        if (!lastBonusTime || (currentTime - lastBonusTime) >= 24 * 60 * 60 * 1000) {
+                            // Update balance and last bonus time
+                            var newBalance = (userData.balance || 0) + DAILY_BONUS_AMOUNT;
+                            db.collection('users').doc(user.uid).update({
+                                balance: newBalance,
+                                lastBonusTime: firebase.firestore.Timestamp.now()
+                            }).then(function() {
+                                alert("Account credited with " + DAILY_BONUS_AMOUNT);
+                            });
+                        } else {
+                            alert("Daily bonus already claimed. Please try again tomorrow.");
+                        }
+                    } else {
+                        alert("User data not found.");
+                    }
+                }).catch(function(error) {
+                    console.error("Error fetching user data: ", error);
+                    alert("Error fetching user data.");
+                });
+            } else {
+                alert("No user logged in.");
+            }
+        });
+
+        // Handle logout
+        document.getElementById('logout-btn').addEventListener('click', function() {
+            auth.signOut().then(function() {
+                clearCache(); // Clear cache on logout
+                window.location.href = 'login.html';
+            }).catch(function(error) {
+                errorMessageDiv.textContent = "Error logging out: " + error.message;
+            });
+        });
+
+        // Navigation function for game modes
+        function navigateTo(mode) {
+            switch (mode) {
+                case 'local':
+                    window.location.href = 'local-game.html';
+                    break;
+                case '2vs2':
+                    window.location.href = '2vs2-game.html';
+                    break;
+                case 'friends':
+                    window.location.href = 'friends-game.html';
+                    break;
+                case 'computer':
+                    window.location.href = 'computer-game.html';
+                    break;
+                case 'online':
+                    window.location.href = 'online-game.html';
+                    break;
+                default:
+                    alert('Invalid game mode selected!');
+            }
+        }
+    </script
+</body>
+</html>
